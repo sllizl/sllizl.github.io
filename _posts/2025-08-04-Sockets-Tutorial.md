@@ -96,7 +96,7 @@ The server code uses a number of ugly programming constructs, and so we will go 
 
 In this server code section we will go throuh the example code `server.c` .
 
-### Create a Socket
+### 1. Create a Socket
 
 To communicate with a client, we first need to create a socket file descriptor for data transfer. The function prototype for creating a socket is shown below:
 ```c
@@ -123,7 +123,7 @@ This `socket()` function returns a new file descriptor, which is a non-negative 
 The next step is to bind a address to the socket.
 
 ### `struct sockaddr`
-Before we `bind()`, I want to introduce a critical data structure `struct sockaddr`.
+Before we `bind()`, I want to introduce a critical data structure `struct sockaddr`. We must initialize `struct sockadr_in` before bind to a socket.
 ```c
 struct sockaddr {
     sa_family_t sa_family;  // Protocal familly (AF_INET、AF_UNIX...)
@@ -141,7 +141,7 @@ struct sockaddr_in {
     unsigned char  sin_zero[8];  // Padding bytes to maintain the same size as sockaddr
 };
 ```
-We must initialize `struct sockadr_in` before bind to a socket as follows:
+Initialization is as follows:
 ```c
 #define SERVER_PORT 8080
 #define SERVER_ADDR "127.0.0.1"
