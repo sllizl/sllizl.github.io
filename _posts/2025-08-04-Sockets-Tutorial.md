@@ -162,7 +162,7 @@ The variable `server_addr` will contain the address of the server, and `client_a
 
 | offset(byte) | 0-1           | 2 - 15                    |
 | ---------- | ------------- | ------------------------- |
-| Field       | sa_family(2B) | sa_data[14](14B)          |
+| Field       | sa_family(2B) | sa_data\[14](14B)          |
 
 
 
@@ -170,4 +170,4 @@ The variable `server_addr` will contain the address of the server, and `client_a
 
 | offset(byte) | 0-1            | 2-3           | 4-7            | 8-15           |
 | ---------- | -------------- | ------------- | -------------- | -------------- |
-| Field       | sin_family(2B) | sin_port(2B)  | sin_addr(4B)   | sin_zero[8](8B)|
+| Field       | sin_family(2B) | sin_port(2B)  | sin_addr(4B)   | sin_zero\[8](8B)|
