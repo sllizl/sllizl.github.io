@@ -26,6 +26,7 @@ The steps involved in establishing a socket on the client side are as follows:
 1. Create a socket with the `socket()` system call
 2. Connect the socket to the address of the server using the `connect()` system call
 3. Send and receive data. There are a number of ways to do this, but the simplest is to use the `read()` and `write()` system calls.
+4. Close socket with `close()`.
 
 The steps involved in establishing a socket on the server side are as follows:
 
@@ -33,13 +34,13 @@ The steps involved in establishing a socket on the server side are as follows:
 2. Bind the socket to an address using the `bind()` system call. For a server socket on the Internet, an address consists of a port number on the host machine.
 3. Listen for connections with the `listen()` system call
 4. Accept a connection with the `accept()` system call. This call typically blocks until a client connects with the server.
-5. Send and receive data
-
+5. Send and receive data with `write()` and `read()`.
+6. Close socket with `close()`.
 
 ## Socket Types
 When a socket is created, the program has to specify the address domain and the socket type. Two processes can communicate with each other only if their sockets are of the same type and in the same domain.
 
-There are two widely used address domains, the unix domain, in which two processes which share a common file system communicate, and the Internet domain, in which two processes running on any two hosts on the Internet communicate. Each of these has its own address format.
+There are two widely used address domains, the **Unix domain**, in which two processes which share a common file system communicate, and the **Internet domain**, in which two processes running on any two hosts on the Internet communicate. Each of these has its own address format.
 
 The address of a socket in the Unix domain is a character string which is basically an entry in the file system.
 
@@ -53,7 +54,7 @@ There are two widely used socket types, stream sockets, and datagram sockets. St
 
 Stream sockets use TCP (Transmission Control Protocol), which is a reliable, stream oriented protocol, and datagram sockets use UDP (Unix Datagram Protocol), which is unreliable and message oriented.
 
-The examples in this tutorial will use sockets in the Internet domain using the TCP protocol.
+**The examples in this tutorial will use sockets in the Internet domain using the TCP protocol.**
 
 
 
@@ -90,3 +91,66 @@ You can simulate this on a single machine by running the server in one window an
 The server code uses a number of ugly programming constructs, and so we will go through it line by line.
 
 ---
+
+## Server Code
+
+In this server code section we will go throuh the example code `server.c` .
+
+### Create a Socket
+
+To communicate with a client, we first need to create a socket file descriptor for data transfer. The function prototype for creating a socket is shown below:
+```c
+int socket(int domain, int type, int protocol);
+```
+- dmain (protocal family)
+    - AF_INET: IPv4 Internet socket
+    - AF_UNIX: Unix domain socket
+    - AF_INET6: IPv6 Internet socket
+
+- type (type of socket)
+    - SOCK_STREAM：connection-oriented (TCP or loacal byte stream) 
+    - SOCK_DGRAM: connectionless (UDP or local datagram)
+
+- protocal
+    - Usually 0, system automatically chooses a proper protocal.
+
+In our case, it should be:
+```c
+server_fd = socket(AF_INET, SOCK_STREAM, 0);
+```
+This `socket()` function returns a new file descriptor, which is a non-negative integer. We will use this fd for several times below. 
+
+The next step is to bind a address to the socket.
+
+### `struct sockaddr`
+Before we `bind()`, I want to introduce a critical data structure `struct sockaddr`.
+```c
+struct sockaddr {
+    sa_family_t sa_family;  // Protocal familly (AF_INET、AF_UNIX...)
+    char        sa_data[14]; // The actual address data (unspecified content, fixed size)
+};
+```
+As a prototype, sockaddr contains two fields. First is `sa_family` for specifing a protocal family, which is 2 bytes long. Second field `sa_data[14]` is for a specific address, which is 14 bytes long.
+
+`struct sockaddr_in` is an address structure specifically designed for IPv4 which we will use, and clearly distinguishing between the port and the IP address. It is defined as follows:
+```c
+struct sockaddr_in {
+    sa_family_t    sin_family;   // AF_INET
+    in_port_t      sin_port;     // 16bit port number（network byte order）
+    struct in_addr sin_addr;     // 32bit IPv4 address
+    unsigned char  sin_zero[8];  // Padding bytes to maintain the same size as sockaddr
+};
+```
+We must initialize `struct sockadr_in` before bind to a socket as follows:
+```c
+#define SERVER_PORT 8080
+#define SERVER_ADDR "127.0.0.1"
+
+struct sockaddr_in server_addr, client_addr;
+
+memset(&server_addr, 0, sizeof(server_addr));
+server_addr.sin_family = AF_INET;             // Protocal familly AF_INET
+server_addr.sin_port = htons(SERVER_PORT);    // Port number
+server_addr.sin_addr.s_addr = inet_addr(SERVER_ADDR); // IP address
+```
+The second field of `sockaddr_in` is unsigned short `sin_port`, which contain the port number. However, instead of simply copying the port number to this field, it is necessary to convert this to **network byte order** using the function **htons()** which converts a port number in host byte order to a port number in network byte order.
