@@ -153,4 +153,21 @@ server_addr.sin_family = AF_INET;             // Protocal familly AF_INET
 server_addr.sin_port = htons(SERVER_PORT);    // Port number
 server_addr.sin_addr.s_addr = inet_addr(SERVER_ADDR); // IP address
 ```
-The second field of `sockaddr_in` is unsigned short `sin_port`, which contain the port number. However, instead of simply copying the port number to this field, it is necessary to convert this to **network byte order** using the function **htons()** which converts a port number in host byte order to a port number in network byte order.
+The second field of `sockaddr_in` is unsigned short `sin_port`, which contain the port number. The user needs to pass in the port number on which the server will accept connections as an argument. However, instead of simply copying the port number to this field, it is necessary to convert this to **network byte order** using the function `htons()` which converts a port number in host byte order to a port number in network byte order.
+
+An `in_addr` structure, defined in the same header file, contains only one field, a unsigned long called `s_addr`.
+The variable `server_addr` will contain the address of the server, and `client_addr` will contain the address of the client which connects to the server.
+
+#### struct sockaddr (16bytes)
+
+| offset(byte) | 0-1           | 2 - 15                    |
+| ---------- | ------------- | ------------------------- |
+| Field       | sa_family(2B) | sa_data[14](14B)          |
+
+
+
+#### struct sockaddr_in (16bytes)
+
+| offset(byte) | 0-1            | 2-3           | 4-7            | 8-15           |
+| ---------- | -------------- | ------------- | -------------- | -------------- |
+| Field       | sin_family(2B) | sin_port(2B)  | sin_addr(4B)   | sin_zero[8](8B)|
