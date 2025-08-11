@@ -118,7 +118,7 @@ In our case, it should be:
 ```c
 server_fd = socket(AF_INET, SOCK_STREAM, 0);
 ```
-This `socket()` function returns a new file descriptor, which is a non-negative integer. We will use this fd for several times below. 
+This `socket()` function returns a new file descriptor which is a non-negative integer, on error -1 is returned. We will use this fd for several times below. 
 
 The next step is to bind a address to the socket.
 
@@ -126,11 +126,11 @@ The next step is to bind a address to the socket.
 Before we `bind()`, I want to introduce a critical data structure `struct sockaddr`. We must initialize `struct sockadr_in` before bind to a socket.
 ```c
 struct sockaddr {
-    sa_family_t sa_family;  // Protocal familly (AF_INET、AF_UNIX...)
+    sa_family_t sa_family;  // Protocal family (AF_INET、AF_UNIX...)
     char        sa_data[14]; // The actual address data (unspecified content, fixed size)
 };
 ```
-As a prototype, sockaddr contains two fields. First is `sa_family` for specifing a protocal family, which is 2 bytes long. Second field `sa_data[14]` is for a specific address, which is 14 bytes long.
+As a prototype, `struct sockaddr` contains two fields. First is `sa_family` for specifing a protocal family, which is 2 bytes long. Second field `sa_data[14]` is for a specific address, which is 14 bytes long.
 
 `struct sockaddr_in` is an address structure specifically designed for IPv4 which we will use, and clearly distinguishing between the port and the IP address. It is defined as follows:
 ```c
@@ -149,18 +149,58 @@ Initialization is as follows:
 struct sockaddr_in server_addr, client_addr;
 
 memset(&server_addr, 0, sizeof(server_addr));
-server_addr.sin_family = AF_INET;             // Protocal familly AF_INET
+server_addr.sin_family = AF_INET;             // Protocal family AF_INET
 server_addr.sin_port = htons(SERVER_PORT);    // Port number
 server_addr.sin_addr.s_addr = inet_addr(SERVER_ADDR); // IP address
+inet_pton(AF_INET, SERVER_ADDR, &server_addr.sin_addr);
 ```
 The second field of `sockaddr_in` is unsigned short `sin_port`, which contain the port number. The user needs to pass in the port number on which the server will accept connections as an argument. However, instead of simply copying the port number to this field, it is necessary to convert this to **network byte order** using the function `htons()` which converts a port number in host byte order to a port number in network byte order.
 
-An `in_addr` structure, defined in the same header file, contains only one field, a unsigned long called `s_addr`.
+An `in_addr sin_addr` structure, defined in the same header file, contains only one field, a unsigned long called `s_addr`. The function `inet_pton()` convert a string address to a 32bit binary internet address. Prototype is:
+```c
+#include <arpa/inet.h>
+
+int inet_pton(int af, const char *src, void *dst);
+```
+**Arguments**
+
+- **af**: specify protocal family
+
+    - AF_INET (IPv4)
+
+    - AF_INET6 (IPv6)
+
+- **src**：Pointer to the address in string format
+
+- **dst**：Pointer to the buffer where the binary address will be stored.
+
+    - For IPv4, this is usually a struct in_addr *
+
+    - For IPv6，this is usually a struct in6_addr *
+
+
 The variable `server_addr` will contain the address of the server, and `client_addr` will contain the address of the client which connects to the server.
+
+### 2. Bind address to socket
+```c
+// Prototype
+int bind(int sockfd, const struct  sockaddr *addr, socklen_t addrlen);
+
+// In our case
+int bind(server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr))
+```
+When a socket is created with **socket()**, it exists in a name space but has no address assigned to it. **bind()** assigns the address specified by <u>addr</u> to the socket reffered to by the file descriptor <u>sockfd</u>. <u>addrlen</u> specifies the size, in bytes, of the address structure pointed to by <u>addr</u>. Traditionally, this operation is called "assigning a name to a socket".
+
+It is normally necessary to assign a local address using **bind()** before a SOCK_STREAM socket may receive connections.
+
+The actual structure passed for the <u>addr</u> argument will depend on the address family as we mentioned before.
+The only purpose of this structure is to cast the structure pointer passed in <u>addr</u> in order to avoid compiler warnings. 
+
+And note that, all the address family has the same size as shown below:
 
 #### struct sockaddr (16bytes)
 
-| offset(byte) | 0-1           | 2 - 15                    |
+| offset(Byte) | 0-1           | 2 - 15                    |
 | ---------- | ------------- | ------------------------- |
 | Field       | sa_family(2B) | sa_data\[14](14B)          |
 
@@ -168,6 +208,7 @@ The variable `server_addr` will contain the address of the server, and `client_a
 
 #### struct sockaddr_in (16bytes)
 
-| offset(byte) | 0-1            | 2-3           | 4-7            | 8-15           |
+| offset(Byte) | 0-1            | 2-3           | 4-7            | 8-15           |
 | ---------- | -------------- | ------------- | -------------- | -------------- |
-| Field       | sin_family(2B) | sin_port(2B)  | sin_addr(4B)   | sin_zero\[8](8B)|
+| 字段       | sin_family(2B) | sin_port(2B)  | sin_addr(4B)   | sin_zero\[8](8B)|
+
