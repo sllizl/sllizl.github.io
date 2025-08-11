@@ -162,7 +162,6 @@ An `in_addr sin_addr` structure, defined in the same header file, contains only 
 
 int inet_pton(int af, const char *src, void *dst);
 ```
-**Arguments**
 
 - **af**: specify protocal family
 
@@ -170,9 +169,9 @@ int inet_pton(int af, const char *src, void *dst);
 
     - AF_INET6 (IPv6)
 
-- **src**：Pointer to the address in string format
+- **src**：pointer to the address in string format
 
-- **dst**：Pointer to the buffer where the binary address will be stored.
+- **dst**：pointer to the buffer where the binary address will be stored.
 
     - For IPv4, this is usually a struct in_addr *
 
@@ -189,6 +188,12 @@ int bind(int sockfd, const struct  sockaddr *addr, socklen_t addrlen);
 // In our case
 int bind(server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr))
 ```
+- **sockfd**: socket file descriptor
+
+- **addr**：pointer to the specific address family
+
+- **addrlen**: specifies the size, in bytes, of the address structure pointed to by <u>addr</u>
+
 When a socket is created with **socket()**, it exists in a name space but has no address assigned to it. **bind()** assigns the address specified by <u>addr</u> to the socket reffered to by the file descriptor <u>sockfd</u>. <u>addrlen</u> specifies the size, in bytes, of the address structure pointed to by <u>addr</u>. Traditionally, this operation is called "assigning a name to a socket".
 
 It is normally necessary to assign a local address using **bind()** before a SOCK_STREAM socket may receive connections.
@@ -212,3 +217,18 @@ And note that, all the address family has the same size as shown below:
 | ---------- | -------------- | ------------- | -------------- | -------------- |
 | 字段       | sin_family(2B) | sin_port(2B)  | sin_addr(4B)   | sin_zero\[8](8B)|
 
+### 3. Listen for connections
+```c
+// Prototype
+int listen(int sockfd, int backlog);
+
+// In our case
+listen(server_fd, 5);
+```
+- **sockfd**: socket file descriptor
+
+- **backlog**: maximum queue of pending connections
+
+**listen()** marks the socket referred to by <u>sockfd</u> as a passive socket, that is, as a socket that will be used to accept incoming connection requests using **accept()**.
+
+On success, zero is returned. On error, -1 is returned, and errno is set to indicate the error.
