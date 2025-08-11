@@ -215,7 +215,7 @@ And note that, all the address family has the same size as shown below:
 
 | offset(Byte) | 0-1            | 2-3           | 4-7            | 8-15           |
 | ---------- | -------------- | ------------- | -------------- | -------------- |
-| 字段       | sin_family(2B) | sin_port(2B)  | sin_addr(4B)   | sin_zero\[8](8B)|
+| Field       | sin_family(2B) | sin_port(2B)  | sin_addr(4B)   | sin_zero\[8](8B)|
 
 ### 3. Listen for connections
 ```c
