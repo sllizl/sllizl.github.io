@@ -2,7 +2,7 @@
 title: IO Multiplexing (select,poll,epoll)
 date: 2025-08-04 23:20:33 +0900
 categories: [Blog, Tutorial]
-tags: [io multiplexing (select,poll,epoll)]     # TAG names should always be lowercase
+tags: [io multiplexing]     # TAG names should always be lowercase
 author: sllizl
 comment: false
 ---
