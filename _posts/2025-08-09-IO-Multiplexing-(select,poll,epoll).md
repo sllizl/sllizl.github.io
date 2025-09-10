@@ -79,7 +79,7 @@ void child_process(void)
 
   connect(sockfd, (struct sockaddr*)&addr, sizeof(addr));
 
-  printf("child {%d} connected \n", getpid());
+  printf("child [%d] connected \n", getpid());
   while(1){
         int sl = (random() % 10 ) +  1;
         num++;
