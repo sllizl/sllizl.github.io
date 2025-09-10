@@ -71,7 +71,7 @@ void child_process(void)
 
   srandom(getpid());
 
-  /* Create socket and connect to server */
+  # Create socket and connect to server
   sockfd = socket(AF_INET, SOCK_STREAM, 0);
   addr.sin_family = AF_INET;
   addr.sin_port = htons(2000);
@@ -169,10 +169,13 @@ The reason we need to tell select what is the highest-numbered file descriptor i
 
 ## Poll System call
 Unlike `select()`, with its inefficient three bitmask-based sets of file descriptors, `poll()` employs a single array of nfds pollfd structures. the prototype is simpler:
+
 ```c
 int poll (struct pollfd *fds, unsigned int nfds, int timeout);
 ```
+
 The structure pollfd has a different fields for the events and the returning events so we don’t need to build it each time:
+
 ```c
 struct pollfd {
       int fd;
@@ -180,9 +183,11 @@ struct pollfd {
       short revents;
 };
 ```
+
 For each file descriptor build an object of type pollfd and fill the required events. after poll returns check the revents field.
 
 To change the above example to use poll:
+
 ```c
   for (i=0;i<5;i++) 
   {
@@ -229,6 +234,7 @@ While working with select and poll we manage everything on user space and we sen
 - wait for events in the context using epoll_wait
 
 Lets change the above example to use epoll:
+
 ```c
  struct epoll_event events[5];
   int epfd = epoll_create(10);
@@ -255,6 +261,7 @@ Lets change the above example to use epoll:
 	}
   }
 ```
+
 We first create a context (the parameter is ignored but has to be positive). When a client connect we create an epoll_event object and add it to the context and on the infinite loop we are only waiting on the context.
 
 ### Epoll vs Select/Poll
