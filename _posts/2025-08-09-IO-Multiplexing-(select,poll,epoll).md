@@ -1,6 +1,6 @@
 ---
 title: IO Multiplexing (select,poll,epoll)
-date: 2025-08-04 23:20:33 +0900
+date: 2025-08-09 17:40:21 +0900
 categories: [Blog, Tutorial]
 tags: [io multiplexing]     # TAG names should always be lowercase
 author: sllizl
