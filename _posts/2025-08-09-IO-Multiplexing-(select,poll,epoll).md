@@ -26,7 +26,7 @@ Simple solution is to create a thread (or process) for each client , block on re
 ---
 
 ## Select System Call
-The select() system call provides a mechanism for implementing synchronous multiplexing I/O.
+The `select()` system call provides a mechanism for implementing synchronous multiplexing I/O.
 
 ```c
 int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout);
