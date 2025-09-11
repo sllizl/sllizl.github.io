@@ -1,6 +1,6 @@
 ---
 title: Mutex lock for Linux Thread Synchronization (user space)
-date: 2025-08-04 23:20:33 +0900
+date: 2025-07-20 20:13:33 +0900
 categories: [Blog, Tutorial]
 tags: [mutex (user space)]     # TAG names should always be lowercase
 author: sllizl
