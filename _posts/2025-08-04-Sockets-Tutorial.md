@@ -2,7 +2,8 @@
 title: Sockets Tutorial
 date: 2025-08-04 23:20:33 +0900
 categories: [Blog, Tutorial]
-tags: [socket]     # TAG names should always be lowercase
+categories: [Blog, IPC]
+tags: [sockets]     # TAG names should always be lowercase
 author: sllizl
 comment: false
 ---
