@@ -163,7 +163,7 @@ This means:
 We also add a `sleep(1)` to simulate some delay.
 
 
-> *#### What `empty` and `full` do*
+> **#### What `empty` and `full` do**
 >    In the classic **single-slot producer-consumer problem**:
 >
 >    | Semaphore | Purpose                                                                   |
