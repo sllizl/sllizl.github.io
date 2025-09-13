@@ -92,7 +92,7 @@ typedef struct {
 
 
 ---
-## Writer:
+## Writer
 
 To write some data to a shared memory space, basic steps are as follows:
 
@@ -163,7 +163,7 @@ This means:
 We also add a `sleep(1)` to simulate some delay.
 
 
-> ### What `empty` and `full` do
+> #### What `empty` and `full` do
 >    In the classic **single-slot producer-consumer problem**:
 >
 >    | Semaphore | Purpose                                                                   |
@@ -171,7 +171,7 @@ We also add a `sleep(1)` to simulate some delay.
 >    | `empty`   | Indicates the buffer is **empty / ready for writing**. Initial value = 1. |
 >    | `full`    | Indicates the buffer is **full / ready for reading**. Initial value = 0.  |
 >
-> ### How they work
+> #### How they work
 >
 >    **Writer (Producer):**
 >
@@ -191,7 +191,7 @@ We also add a `sleep(1)` to simulate some delay.
 >
 >
 >
-> ### Why this works
+> #### Why this works
 >
 >    * **`empty`** ensures the writer **does not overwrite** unread data.
 >
@@ -205,7 +205,7 @@ We also add a `sleep(1)` to simulate some delay.
 >
 >    ---
 >
-> ### Timing Diagram (Single-slot buffer)
+> #### Timing Diagram (Single-slot buffer)
 >
 >    ```
 >    Time → 
@@ -229,7 +229,7 @@ We also add a `sleep(1)` to simulate some delay.
 >
 >    ---
 >
-> ### Note
+> #### Note
 >
 >    * These semaphores **don’t hold the data**, only control access and order.
 >
@@ -316,8 +316,9 @@ With these building blocks, you can implement more complex IPC systems, such as 
 
 ---
 
-## Reader:
+## Reader
 
+### Full Example (Reader)
 ```c
 #include "shm_sem.h"
 
